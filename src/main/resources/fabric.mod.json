@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "jewellery_box",
+	"version": "${version}",
+	"name": "Jewellery Box",
+	"description": "Display jewwllery in dainty boxes!",
+	"authors": [
+		"Midget807"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/jewellery_box/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.midget807.jewellery_box.JewelleryBoxMain"
+		],
+		"client": [
+			"net.midget807.jewellery_box.client.JewelleryBoxClient"
+		],
+		"fabric-datagen": [
+			"net.midget807.jewellery_box.JewelleryBoxDataGenerator"
+		]
+	},
+	"mixins": [
+		"jewellery_box.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.9",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
