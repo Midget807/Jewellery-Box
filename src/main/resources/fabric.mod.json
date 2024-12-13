@@ -3,13 +3,12 @@
 	"id": "jewellery_box",
 	"version": "${version}",
 	"name": "Jewellery Box",
-	"description": "Display jewwllery in dainty boxes!",
+	"description": "Display jewellery in dainty boxes!",
 	"authors": [
 		"Midget807"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/Midget807/Jewellery-Box"
 	},
 	"license": "MIT",
 	"icon": "assets/jewellery_box/icon.png",

@@ -3,6 +3,9 @@ package net.midget807.jewellery_box;
 import net.fabricmc.api.ModInitializer;
 
 import net.midget807.jewellery_box.block.ModBlocks;
+import net.midget807.jewellery_box.block.entity.ModBlockEntities;
+import net.midget807.jewellery_box.screen.ModScreenHandlers;
+import net.midget807.jewellery_box.stat.ModStats;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,9 @@ public class JewelleryBoxMain implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModBlocks.registerModBlocks();
+		ModBlockEntities.registerModBlockEntities();
+		ModScreenHandlers.registerModScreenHandlers();
+		ModStats.registerModStats();
 
 		LOGGER.info("wassup");
 	}
