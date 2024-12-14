@@ -28,11 +28,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory, LidOpenable, Nameable {
     @Nullable
     private Text customName;
     private static final String CUSTOM_NAME_KEY = "CustomName";
-    public int size = 1;
+    public int size;
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(size, ItemStack.EMPTY);
     private final ViewerCountManager stateManager = new ViewerCountManager() {
         @Override
@@ -65,6 +67,15 @@ public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenH
 
     public JewelleryBoxBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.JEWELLERY_BOX_BLOCK_ENTITY, pos, state);
+    }
+    public DefaultedList<ItemStack> getRenderStacks() {
+        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
+        if (defaultedList.isEmpty()) {
+            defaultedList.add(ItemStack.EMPTY);
+        } else {
+            defaultedList.addAll(this.inventory);
+        }
+        return defaultedList;
     }
 
     @Override
@@ -149,18 +160,20 @@ public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenH
         super.readNbt(nbt);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         Inventories.readNbt(nbt, this.inventory);
+        /*
         if (nbt.contains(CUSTOM_NAME_KEY, NbtElement.STRING_TYPE)) {
             this.customName = Text.Serializer.fromJson(nbt.getString(CUSTOM_NAME_KEY));
-        }
+        }*/
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.inventory);
+        /*
         if (this.customName != null) {
             nbt.putString(CUSTOM_NAME_KEY, Text.Serializer.toJson(this.customName));
-        }
+        }*/
     }
 
     public void setCustomName(Text name) {
