@@ -71,11 +71,30 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
-            player.openHandledScreen(
-                    new SimpleNamedScreenHandlerFactory(
-                            (syncId, playerInventory, player1) -> JewelleryBoxScreenHandler.createFull(syncId, playerInventory), this.getName()
-                    )
-            );
+            switch (size) {
+                case 2:
+                    player.openHandledScreen(
+                            new SimpleNamedScreenHandlerFactory(
+                                    (syncId, playerInventory, player1) -> JewelleryBoxScreenHandler.createQuarter(syncId, playerInventory), this.getName()
+                            )
+                    );
+                    break;
+                case 4:
+                    player.openHandledScreen(
+                            new SimpleNamedScreenHandlerFactory(
+                                    (syncId, playerInventory, player1) -> JewelleryBoxScreenHandler.createHalf(syncId, playerInventory), this.getName()
+                            )
+                    );
+                    break;
+                default:
+                    player.openHandledScreen(
+                            new SimpleNamedScreenHandlerFactory(
+                                    (syncId, playerInventory, player1) -> JewelleryBoxScreenHandler.createFull(syncId, playerInventory), this.getName()
+                            )
+                    );
+                    break;
+            }
+
             player.incrementStat(this.getOpenStat());
             PiglinBrain.onGuardedBlockInteracted(player, true);
 

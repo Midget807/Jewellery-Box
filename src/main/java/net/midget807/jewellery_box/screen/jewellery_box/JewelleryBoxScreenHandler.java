@@ -29,22 +29,22 @@ public class JewelleryBoxScreenHandler extends ScreenHandler {
     }
     public JewelleryBoxScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory, int columns) {
         super(type, syncId);
-        checkSize(inventory, columns);
         this.inventory = inventory;
         this.columns = columns;
+        checkSize(inventory, columns);
         inventory.onOpen(playerInventory.player);
-        int i = -3 * 18;
+        int i = 51;
         for (int j = 0; j < columns; j++) {
-            this.addSlot(new Slot(inventory, j, 8 + j * 18, 18));
+            this.addSlot(new Slot(inventory, j, 17 + j * 18, 20));
         }
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 9; k++) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 103 + j * 18 + i));
+                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, j * 18 + i));
             }
         }
 
         for (int j = 0; j < 9; j++) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 161 + i));
+            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 109));
         }
     }
 
@@ -55,11 +55,11 @@ public class JewelleryBoxScreenHandler extends ScreenHandler {
         if (slot2 != null && slot2.hasStack()) {
             ItemStack itemStack2 = slot2.getStack();
             itemStack = itemStack2.copy();
-            if (slot < columns) {
-                if (!this.insertItem(itemStack2, columns, this.slots.size(), true)) {
+            if (slot < this.inventory.size()) {
+                if (!this.insertItem(itemStack2, this.inventory.size(), this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.insertItem(itemStack2, 0, columns, false)) {
+            } else if (!this.insertItem(itemStack2, 0, this.inventory.size(), false)) {
                 return ItemStack.EMPTY;
             }
 
