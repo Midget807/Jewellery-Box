@@ -1,3 +1,6 @@
 {
-  "container.jewellery_box.jewellery_box": "Jewellery Box"
+  "container.jewellery_box.jewellery_box": "Jewellery Box",
+  "block.jewellery_box.full_jewellery_box": "Jewellery Box",
+  "block.jewellery_box.half_jewellery_box": "Jewellery Box",
+  "block.jewellery_box.quarter_jewellery_box": "Jewellery Box"
 }

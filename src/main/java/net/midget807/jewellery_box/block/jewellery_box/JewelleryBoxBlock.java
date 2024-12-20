@@ -7,12 +7,15 @@ import net.midget807.jewellery_box.screen.jewellery_box.JewelleryBoxScreenHandle
 import net.midget807.jewellery_box.stat.ModStats;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
@@ -24,6 +27,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,7 +41,9 @@ import org.jetbrains.annotations.Nullable;
 public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntity> implements Waterloggable {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    public VoxelShape SHAPE = Block.createCuboidShape(1, 0, 1, 15, 8, 15);
+    public VoxelShape FULL_SHAPE = Block.createCuboidShape(1, 0, 1, 15, 8, 15);
+    public VoxelShape HALF_SHAPE = Block.createCuboidShape(1, 0, 4.5, 15, 8, 11.5);
+    public VoxelShape QUARTER_SHAPE = Block.createCuboidShape(4.5, 0, 4.5, 11.5, 8, 11.5);
     public final int size;
     public JewelleryBoxBlock(Settings settings, int size) {
         super(settings, () -> ModBlockEntities.JEWELLERY_BOX_BLOCK_ENTITY);
@@ -50,9 +56,17 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
         return DoubleBlockProperties.PropertyRetriever::getFallback;
     }
 
+    public int getSize() {
+        return size;
+    }
+
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return SHAPE;
+        return switch (size) {
+            case 2 -> QUARTER_SHAPE;
+            case 4 -> HALF_SHAPE;
+            default -> FULL_SHAPE;
+        };
     }
     @Override
     public BlockRenderType getRenderType(BlockState state) {
@@ -71,32 +85,12 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
-            switch (size) {
-                case 2:
-                    player.openHandledScreen(
-                            new SimpleNamedScreenHandlerFactory(
-                                    (syncId, playerInventory, player1) -> JewelleryBoxScreenHandler.createQuarter(syncId, playerInventory), this.getName()
-                            )
-                    );
-                    break;
-                case 4:
-                    player.openHandledScreen(
-                            new SimpleNamedScreenHandlerFactory(
-                                    (syncId, playerInventory, player1) -> JewelleryBoxScreenHandler.createHalf(syncId, playerInventory), this.getName()
-                            )
-                    );
-                    break;
-                default:
-                    player.openHandledScreen(
-                            new SimpleNamedScreenHandlerFactory(
-                                    (syncId, playerInventory, player1) -> JewelleryBoxScreenHandler.createFull(syncId, playerInventory), this.getName()
-                            )
-                    );
-                    break;
+            NamedScreenHandlerFactory namedScreenHandlerFactory = (JewelleryBoxBlockEntity) world.getBlockEntity(pos);
+            if (namedScreenHandlerFactory != null) {
+                player.openHandledScreen(namedScreenHandlerFactory);
+                player.incrementStat(this.getOpenStat());
+                PiglinBrain.onGuardedBlockInteracted(player, true);
             }
-
-            player.incrementStat(this.getOpenStat());
-            PiglinBrain.onGuardedBlockInteracted(player, true);
 
             return ActionResult.CONSUME;
         }
@@ -109,7 +103,8 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         JewelleryBoxBlockEntity jewelleryBoxBlockEntity = new JewelleryBoxBlockEntity(pos, state);
-        jewelleryBoxBlockEntity.setSize(this.size);
+        jewelleryBoxBlockEntity.size = this.size;
+        jewelleryBoxBlockEntity.inventory = DefaultedList.ofSize(this.size, ItemStack.EMPTY);
         return jewelleryBoxBlockEntity;
     }
 
@@ -155,6 +150,28 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof JewelleryBoxBlockEntity) {
             ((JewelleryBoxBlockEntity)blockEntity).onScheduledTick();
+        }
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        if (itemStack.hasCustomName()) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof JewelleryBoxBlockEntity jewelleryBoxBlockEntity) {
+                jewelleryBoxBlockEntity.setCustomName(itemStack.getName());
+            }
+        }
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock())) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof Inventory) {
+                ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
+                world.updateComparators(pos, this);
+            }
+            super.onStateReplaced(state, world, pos, newState, moved);
         }
     }
 }

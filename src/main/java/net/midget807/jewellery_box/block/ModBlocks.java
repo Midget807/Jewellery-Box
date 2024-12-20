@@ -13,6 +13,7 @@ import net.minecraft.registry.Registry;
 public class ModBlocks {
     public static final Block FULL_JEWELLERY_BOX = registerBlock("full_jewellery_box", new JewelleryBoxBlock(FabricBlockSettings.create().nonOpaque(), 8));
     public static final Block HALF_JEWELLERY_BOX = registerBlock("half_jewellery_box", new JewelleryBoxBlock(FabricBlockSettings.create().nonOpaque(), 4));
+    public static final Block QUARTER_JEWELLERY_BOX = registerBlock("quarter_jewellery_box", new JewelleryBoxBlock(FabricBlockSettings.create().nonOpaque(), 2));
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
         return Registry.register(Registries.BLOCK, JewelleryBoxMain.id(name), block);

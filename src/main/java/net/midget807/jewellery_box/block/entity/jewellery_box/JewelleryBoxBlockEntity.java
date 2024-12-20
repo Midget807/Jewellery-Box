@@ -1,13 +1,16 @@
 package net.midget807.jewellery_box.block.entity.jewellery_box;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.midget807.jewellery_box.block.entity.ImplementedInventory;
 import net.midget807.jewellery_box.block.entity.ModBlockEntities;
+import net.midget807.jewellery_box.block.jewellery_box.JewelleryBoxBlock;
+import net.midget807.jewellery_box.network.ModMessages;
+import net.midget807.jewellery_box.screen.jewellery_box.JewelleryBoxScreenHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestLidAnimator;
-import net.minecraft.block.entity.LidOpenable;
-import net.minecraft.block.entity.ViewerCountManager;
+import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -15,9 +18,16 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -30,12 +40,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory, LidOpenable, Nameable {
-    @Nullable
-    private Text customName;
-    private static final String CUSTOM_NAME_KEY = "CustomName";
+public class JewelleryBoxBlockEntity extends LootableContainerBlockEntity implements ImplementedInventory, LidOpenable, Nameable {
+
     public int size;
-    private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(size, ItemStack.EMPTY);
+    public DefaultedList<ItemStack> inventory;
     private final ViewerCountManager stateManager = new ViewerCountManager() {
         @Override
         protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
@@ -54,10 +62,10 @@ public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenH
 
         @Override
         protected boolean isPlayerViewing(PlayerEntity player) {
-            if (!(player.currentScreenHandler instanceof GenericContainerScreenHandler)) {
+            if (!(player.currentScreenHandler instanceof JewelleryBoxScreenHandler)) {
                 return false;
             } else {
-                Inventory inventory = ((GenericContainerScreenHandler) player.currentScreenHandler).getInventory();
+                Inventory inventory = ((JewelleryBoxScreenHandler) player.currentScreenHandler).getInventory();
                 return inventory == JewelleryBoxBlockEntity.this;
             }
         }
@@ -68,6 +76,7 @@ public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenH
     public JewelleryBoxBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.JEWELLERY_BOX_BLOCK_ENTITY, pos, state);
     }
+
     public DefaultedList<ItemStack> getRenderStacks() {
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         if (defaultedList.isEmpty()) {
@@ -100,6 +109,7 @@ public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenH
         if (!this.removed && !player.isSpectator()) {
             this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
+
     }
 
 
@@ -115,40 +125,33 @@ public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenH
         blockEntity.lidAnimator.step();
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
 
     @Override
     public int size() {
-        return this.size;
+        return 8;
     }
 
     @Override
     public DefaultedList<ItemStack> getItems() {
-        return null;
+        return this.inventory;
+    }
+
+
+
+    @Override
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return switch (size) {
+            case 2 -> JewelleryBoxScreenHandler.createQuarter(syncId, playerInventory, this);
+            case 4 -> JewelleryBoxScreenHandler.createHalf(syncId, playerInventory, this);
+            default -> JewelleryBoxScreenHandler.createFull(syncId, playerInventory, this);
+        };
     }
 
     @Override
-    public Text getName() {
-        return this.customName != null ? this.customName : this.getContainerName();
-    }
-
-    private Text getContainerName() {
+    protected Text getContainerName() {
         return Text.translatable("container.jewellery_box.jewellery_box");
     }
 
-    @Override
-    public Text getDisplayName() {
-        return this.getName();
-    }
-
-    @Nullable
-    @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return null;
-    }
 
     @Override
     public float getAnimationProgress(float tickDelta) {
@@ -157,9 +160,9 @@ public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenH
 
     @Override
     public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         Inventories.readNbt(nbt, this.inventory);
+        super.readNbt(nbt);
         /*
         if (nbt.contains(CUSTOM_NAME_KEY, NbtElement.STRING_TYPE)) {
             this.customName = Text.Serializer.fromJson(nbt.getString(CUSTOM_NAME_KEY));
@@ -176,13 +179,57 @@ public class JewelleryBoxBlockEntity extends BlockEntity implements NamedScreenH
         }*/
     }
 
-    public void setCustomName(Text name) {
-        this.customName = name;
-    }
-
     public void onScheduledTick() {
         if (!this.removed) {
             this.stateManager.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
+
+    @Override
+    public void markDirty() {
+        if (!world.isClient()) {
+            PacketByteBuf data = PacketByteBufs.create();
+            data.writeInt(inventory.size());
+            for (int i = 0; i < inventory.size(); i++) {
+                data.writeItemStack(inventory.get(i));
+            }
+            data.writeBlockPos(getPos());
+            for (ServerPlayerEntity player : PlayerLookup.tracking((ServerWorld) world, getPos())) {
+                ServerPlayNetworking.send(player, ModMessages.ITEM_SYNC, data);
+            }
+        }
+        super.markDirty();
+    }
+
+    public void setInventory(DefaultedList<ItemStack> inventory) {
+        for (int i = 0; i < inventory.size(); i++) {
+            this.inventory.set(i, inventory.get(i));
+        }
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        return createNbt();
+    }
+
+    @Override
+    protected DefaultedList<ItemStack> getInvStackList() {
+        return this.inventory;
+    }
+
+    @Override
+    protected void setInvStackList(DefaultedList<ItemStack> list) {
+        this.inventory = list;
+    }
+
 }

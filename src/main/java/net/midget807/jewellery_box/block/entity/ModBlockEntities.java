@@ -4,9 +4,11 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.midget807.jewellery_box.JewelleryBoxMain;
 import net.midget807.jewellery_box.block.ModBlocks;
 import net.midget807.jewellery_box.block.entity.jewellery_box.JewelleryBoxBlockEntity;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.util.math.BlockPos;
 
 public class ModBlockEntities {
     public static final BlockEntityType<JewelleryBoxBlockEntity> JEWELLERY_BOX_BLOCK_ENTITY =

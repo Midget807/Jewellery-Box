@@ -4,6 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.midget807.jewellery_box.block.entity.ModBlockEntities;
 import net.midget807.jewellery_box.client.renderer.JewelleryBoxEntityRenderer;
 import net.midget807.jewellery_box.client.screen.JewelleryBoxScreen;
+import net.midget807.jewellery_box.network.ModMessages;
 import net.midget807.jewellery_box.screen.ModScreenHandlers;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
@@ -16,5 +17,6 @@ public class JewelleryBoxClient implements ClientModInitializer {
         HandledScreens.register(ModScreenHandlers.JEWELLERY_BOX_2, JewelleryBoxScreen::new);
 
         BlockEntityRendererFactories.register(ModBlockEntities.JEWELLERY_BOX_BLOCK_ENTITY, JewelleryBoxEntityRenderer::new);
+        ModMessages.registerS2CPackets();
     }
 }

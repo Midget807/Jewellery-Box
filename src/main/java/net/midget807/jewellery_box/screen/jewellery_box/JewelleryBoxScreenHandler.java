@@ -27,6 +27,15 @@ public class JewelleryBoxScreenHandler extends ScreenHandler {
     public static JewelleryBoxScreenHandler createQuarter(int syncId, PlayerInventory playerInventory) {
         return new JewelleryBoxScreenHandler(ModScreenHandlers.JEWELLERY_BOX_2, syncId, playerInventory, 2);
     }
+    public static JewelleryBoxScreenHandler createFull(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+        return new JewelleryBoxScreenHandler(ModScreenHandlers.JEWELLERY_BOX_8, syncId, playerInventory, inventory, 8);
+    }
+    public static JewelleryBoxScreenHandler createHalf(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+        return new JewelleryBoxScreenHandler(ModScreenHandlers.JEWELLERY_BOX_4, syncId, playerInventory, inventory, 4);
+    }
+    public static JewelleryBoxScreenHandler createQuarter(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+        return new JewelleryBoxScreenHandler(ModScreenHandlers.JEWELLERY_BOX_2, syncId, playerInventory, inventory, 2);
+    }
     public JewelleryBoxScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory, int columns) {
         super(type, syncId);
         this.inventory = inventory;
@@ -34,15 +43,20 @@ public class JewelleryBoxScreenHandler extends ScreenHandler {
         checkSize(inventory, columns);
         inventory.onOpen(playerInventory.player);
         int i = 51;
+        int maxColumns = 8;
+        //adds container columns
+
         for (int j = 0; j < columns; j++) {
-            this.addSlot(new Slot(inventory, j, 17 + j * 18, 20));
+            this.addSlot(new Slot(inventory, j, 17 + ((maxColumns - columns) * 9) + j * 18, 20));
         }
+
+        //adds player inventory slots
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 9; k++) {
                 this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, j * 18 + i));
             }
         }
-
+        //adds slots for hotbar
         for (int j = 0; j < 9; j++) {
             this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 109));
         }
