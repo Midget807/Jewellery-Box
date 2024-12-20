@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "jewellery_box:block/half_jewellery_box",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "jewellery_box:block/half_jewellery_box"
+    },
+    "facing=south": {
+      "model": "jewellery_box:block/half_jewellery_box",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "jewellery_box:block/half_jewellery_box",
+      "y": 270
+    }
+  }
+}

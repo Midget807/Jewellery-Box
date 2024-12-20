@@ -1,0 +1,7 @@
+// 1.20.1	2024-12-20T20:44:17.1584025	Jewellery Box/Model Definitions
+efbb404c8dfaf30174269e6d7d443961973f77d8 assets\jewellery_box\blockstates\full_jewellery_box.json
+1760029cab7f373b96c12441d883443046089f8c assets\jewellery_box\blockstates\half_jewellery_box.json
+9edaacf3ebd6a2c7d6fdc3b7e0f322bffff879c7 assets\jewellery_box\models\item\full_jewellery_box.json
+0f6202e4ed6d5ab04c48fb1be92d918dc5960831 assets\jewellery_box\models\item\quarter_jewellery_box.json
+6171fab6dae32cf6b111c6f24640dc710b37fc83 assets\jewellery_box\blockstates\quarter_jewellery_box.json
+d0a9bc96688fc69ed0cd5dae850e4d8e4af7b907 assets\jewellery_box\models\item\half_jewellery_box.json

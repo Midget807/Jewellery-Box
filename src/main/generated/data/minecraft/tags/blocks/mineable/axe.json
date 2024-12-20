@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "jewellery_box:full_jewellery_box",
+    "jewellery_box:half_jewellery_box",
+    "jewellery_box:quarter_jewellery_box"
+  ]
+}
