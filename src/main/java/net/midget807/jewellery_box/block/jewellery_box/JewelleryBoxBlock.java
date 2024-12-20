@@ -1,5 +1,6 @@
 package net.midget807.jewellery_box.block.jewellery_box;
 
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.midget807.jewellery_box.JewelleryBoxMain;
 import net.midget807.jewellery_box.block.entity.ModBlockEntities;
 import net.midget807.jewellery_box.block.entity.jewellery_box.JewelleryBoxBlockEntity;
@@ -17,6 +18,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
@@ -39,10 +41,11 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntity> implements Waterloggable {
-    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public VoxelShape FULL_SHAPE = Block.createCuboidShape(1, 0, 1, 15, 8, 15);
-    public VoxelShape HALF_SHAPE = Block.createCuboidShape(1, 0, 4.5, 15, 8, 11.5);
+    public VoxelShape Z_AXIS_HALF_SHAPE = Block.createCuboidShape(1, 0, 4.5, 15, 8, 11.5);
+    public VoxelShape X_AXIS_HALF_SHAPE = Block.createCuboidShape(4.5, 0, 1, 11.5, 8, 15);
     public VoxelShape QUARTER_SHAPE = Block.createCuboidShape(4.5, 0, 4.5, 11.5, 8, 11.5);
     public final int size;
     public JewelleryBoxBlock(Settings settings, int size) {
@@ -62,9 +65,10 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        Direction direction = state.get(FACING);
         return switch (size) {
             case 2 -> QUARTER_SHAPE;
-            case 4 -> HALF_SHAPE;
+            case 4 -> direction.getAxis() == Direction.Axis.X ? X_AXIS_HALF_SHAPE : Z_AXIS_HALF_SHAPE;
             default -> FULL_SHAPE;
         };
     }
@@ -167,11 +171,20 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof Inventory) {
-                ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
-                world.updateComparators(pos, this);
+            if (blockEntity instanceof JewelleryBoxBlockEntity) {
+                ItemScatterer.spawn(world, pos, ((JewelleryBoxBlockEntity) blockEntity));
             }
             super.onStateReplaced(state, world, pos, newState, moved);
         }
+    }
+
+    @Override
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 }

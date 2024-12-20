@@ -78,13 +78,7 @@ public class JewelleryBoxBlockEntity extends LootableContainerBlockEntity implem
     }
 
     public DefaultedList<ItemStack> getRenderStacks() {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-        if (defaultedList.isEmpty()) {
-            defaultedList.add(ItemStack.EMPTY);
-        } else {
-            defaultedList.addAll(this.inventory);
-        }
-        return defaultedList;
+        return this.inventory.isEmpty() ? DefaultedList.ofSize(this.size, ItemStack.EMPTY) : this.inventory;
     }
 
     @Override
@@ -128,7 +122,7 @@ public class JewelleryBoxBlockEntity extends LootableContainerBlockEntity implem
 
     @Override
     public int size() {
-        return 8;
+        return this.size;
     }
 
     @Override

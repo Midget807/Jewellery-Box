@@ -1,11 +1,13 @@
 {
-	"required": true,
-	"package": "net.midget807.jewellery_box.mixin",
-	"compatibilityLevel": "JAVA_17",
-	"mixins": [
-		"ExampleMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "net.midget807.jewellery_box.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "client.EntityModelsMixin"
+  ]
 }
