@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "directory",
+      "source": "entity/jewellery_box",
+      "prefix": "entity/jewellery_box/"
+    }
+  ]
+}

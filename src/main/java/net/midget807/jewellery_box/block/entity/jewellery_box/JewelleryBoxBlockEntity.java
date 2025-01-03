@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.midget807.jewellery_box.block.entity.ImplementedInventory;
 import net.midget807.jewellery_box.block.entity.ModBlockEntities;
 import net.midget807.jewellery_box.block.jewellery_box.JewelleryBoxBlock;
+import net.midget807.jewellery_box.client.renderer.JewelleryBoxEntityRenderer;
 import net.midget807.jewellery_box.network.ModMessages;
 import net.midget807.jewellery_box.screen.jewellery_box.JewelleryBoxScreenHandler;
 import net.minecraft.block.Block;
@@ -149,11 +150,12 @@ public class JewelleryBoxBlockEntity extends LootableContainerBlockEntity implem
 
     @Override
     public float getAnimationProgress(float tickDelta) {
-        return 0;
+        return this.lidAnimator.getProgress(tickDelta);
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
+        this.size = nbt.getInt("Size");
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         Inventories.readNbt(nbt, this.inventory);
         super.readNbt(nbt);
@@ -166,6 +168,7 @@ public class JewelleryBoxBlockEntity extends LootableContainerBlockEntity implem
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
+        nbt.putInt("Size", size);
         Inventories.writeNbt(nbt, this.inventory);
         /*
         if (this.customName != null) {

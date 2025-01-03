@@ -187,4 +187,22 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
+    public static DoubleBlockProperties.PropertyRetriever<JewelleryBoxBlockEntity, Float2FloatFunction> getAnimationProgressRetriever(LidOpenable progress) {
+        return new DoubleBlockProperties.PropertyRetriever<>() {
+            @Override
+            public Float2FloatFunction getFromBoth(JewelleryBoxBlockEntity first, JewelleryBoxBlockEntity second) {
+                return tickDelta -> Math.max(first.getAnimationProgress(tickDelta), second.getAnimationProgress(tickDelta));
+            }
+
+            @Override
+            public Float2FloatFunction getFrom(JewelleryBoxBlockEntity single) {
+                return single::getAnimationProgress;
+            }
+
+            @Override
+            public Float2FloatFunction getFallback() {
+                return progress::getAnimationProgress;
+            }
+        };
+    }
 }
