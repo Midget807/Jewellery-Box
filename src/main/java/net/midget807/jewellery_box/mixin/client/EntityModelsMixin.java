@@ -18,7 +18,9 @@ import java.util.Map;
 public class EntityModelsMixin {
     @Inject(method = "getModels", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/entity/model/EntityModelLayers;ALLAY:Lnet/minecraft/client/render/entity/model/EntityModelLayer;"))
     private static void jb$addModel(CallbackInfoReturnable<Map<EntityModelLayer, TexturedModelData>> cir, @Local ImmutableMap.Builder<EntityModelLayer, TexturedModelData> builderLocalRef) {
-        builderLocalRef.put(ModEntityModelLayers.JEWELLERY_BOX, JewelleryBoxEntityRenderer.getTextureModelData());
+        builderLocalRef.put(ModEntityModelLayers.FULL_JEWELLERY_BOX, JewelleryBoxEntityRenderer.getFullTextureModelData());
+        builderLocalRef.put(ModEntityModelLayers.HALF_JEWELLERY_BOX, JewelleryBoxEntityRenderer.getHalfTextureModelData());
+        builderLocalRef.put(ModEntityModelLayers.QUARTER_JEWELLERY_BOX, JewelleryBoxEntityRenderer.getQuarterTextureModelData());
 
     }
 }

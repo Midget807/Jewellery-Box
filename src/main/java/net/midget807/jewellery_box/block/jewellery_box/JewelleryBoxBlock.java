@@ -44,9 +44,9 @@ public class JewelleryBoxBlock extends AbstractChestBlock<JewelleryBoxBlockEntit
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public VoxelShape FULL_SHAPE = Block.createCuboidShape(1, 0, 1, 15, 8, 15);
-    public VoxelShape Z_AXIS_HALF_SHAPE = Block.createCuboidShape(1, 0, 4.5, 15, 8, 11.5);
-    public VoxelShape X_AXIS_HALF_SHAPE = Block.createCuboidShape(4.5, 0, 1, 11.5, 8, 15);
-    public VoxelShape QUARTER_SHAPE = Block.createCuboidShape(4.5, 0, 4.5, 11.5, 8, 11.5);
+    public VoxelShape Z_AXIS_HALF_SHAPE = Block.createCuboidShape(1, 0, 4.5, 15, 6, 11.5);
+    public VoxelShape X_AXIS_HALF_SHAPE = Block.createCuboidShape(4.5, 0, 1, 11.5, 6, 15);
+    public VoxelShape QUARTER_SHAPE = Block.createCuboidShape(4.5, 0, 4.5, 11.5, 5, 11.5);
     public final int size;
     public JewelleryBoxBlock(Settings settings, int size) {
         super(settings, () -> ModBlockEntities.JEWELLERY_BOX_BLOCK_ENTITY);

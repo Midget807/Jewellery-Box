@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 public class ModBlockEntities {
     public static final BlockEntityType<JewelleryBoxBlockEntity> JEWELLERY_BOX_BLOCK_ENTITY =
             Registry.register(Registries.BLOCK_ENTITY_TYPE, JewelleryBoxMain.id("jewellery_box_entity"),
-                    FabricBlockEntityTypeBuilder.create(JewelleryBoxBlockEntity::new, ModBlocks.FULL_JEWELLERY_BOX, ModBlocks.HALF_JEWELLERY_BOX).build()
+                    FabricBlockEntityTypeBuilder.create(JewelleryBoxBlockEntity::new, ModBlocks.FULL_JEWELLERY_BOX, ModBlocks.HALF_JEWELLERY_BOX, ModBlocks.QUARTER_JEWELLERY_BOX).build()
             );
     public static void registerModBlockEntities() {
         JewelleryBoxMain.LOGGER.info("Registering Mod Block Entities");
