@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "jewellery_box:half_jewellery_box"
+    }
+  ],
+  "result": {
+    "count": 2,
+    "item": "jewellery_box:quarter_jewellery_box"
+  }
+}

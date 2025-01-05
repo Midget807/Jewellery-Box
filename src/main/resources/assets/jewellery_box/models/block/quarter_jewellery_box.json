@@ -3,7 +3,7 @@
 	"texture_size": [64, 64],
 	"textures": {
 		"0": "jewellery_box:block/quarter_jewellery_box",
-		"particle": "jewellery_box:block/quarter_jewellery_box"
+		"particle": "minecraft:block/dark_oak_planks"
 	},
 	"elements": [
 		{
